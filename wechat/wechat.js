@@ -9,6 +9,7 @@ var prefix = 'https://api.weixin.qq.com/cgi-bin/';
 var api = {
     accessToken: prefix + 'token?grant_type=client_credential'
 };
+var util = require('./util');
 
 /*constructor function
 to manage the api with wechat
@@ -38,7 +39,7 @@ function Wechat(opts){
             // if file's access_token is valid, keep it
             // if access_token is not valid,update access_token
             if (that.isValidAccessToken(data)) {
-                Promise.resolve(data);
+                return Promise.resolve(data);
             } else {
                 return that.updateAccessToken();
             }
@@ -79,7 +80,16 @@ Wechat.prototype.updateAccessToken = function(){
         resolve(data);
         })
     })
-
 };
+
+Wechat.prototype.reply = function () {
+    var content = this.body;
+    var message = this.weixin;
+
+    var xml = util.tpl(content, message);
+    this.status = 200;
+    this.type = 'application/xml';
+    this.body = xml;
+}
 
 module.exports = Wechat;

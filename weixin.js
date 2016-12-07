@@ -10,7 +10,7 @@ exports.reply = function* (next) {
             if (message.EventKey) {
                 console.log("follow by scan QR code: " + message.EventKey + ' ' + message.Ticket);
             }
-            this.body = 'welcome to subscribe\r\n' + ' Message ID: ' + message.MsgId;
+            this.body = 'welcome to subscribe\r\n';
         }
 
         else if (message.Event === 'unsubscribe') {

@@ -9,7 +9,7 @@ var getRawBody = require('raw-body');
 var util = require('./util');
 
 module.exports = function(opts){
-    // var wechat = new Wechat(opts);
+    var wechat = new Wechat(opts);
     return function *(next){
         console.log(this.query);
         var that = this;
@@ -37,39 +37,45 @@ module.exports = function(opts){
                 this.body = "wrong";
                 console.log('4POSE,wrong');
                 return false;
-            } else {
+            }
+            else {
                 console.log('Method:POST,right');
                 var data = yield getRawBody(this.req,{
                     length: this.length,
                     limit: '1mb',
                     encoding: this.charset
                 });
-                console.log(data.toString());
+                // console.log(data.toString());
                 var content = yield util.parseXMLAsync(data);
                 console.log(content);
                 var message = util.formatMessage(content.xml);
                 console.log(message);
 
-                if (message.MsgType === 'event') {
-                    if (message.Event === 'subscribe') {
-                        var now = new Date().getTime();
+                this.weixin = message;
 
-                        that.status = 200;
-                        that.type = 'application/xml';
-                        that.body = '<xml>' +
-                        '<ToUserName><![CDATA['+ message.FromUserName + ']]></ToUserName>' +
-                        '<FromUserName><![CDATA[' + message.ToUserName + ']]></FromUserName>' +
-                        '<CreateTime>' + now +'</CreateTime>' +
-                        '<MsgType><![CDATA[text]]></MsgType>' +
-                        '<Content><![CDATA[hello world]]></Content>' +
-                        '</xml>';
+                yield handler.call(this,next);
 
-                        return
-                    }
-                }
+                wechat.reply.call(this);
+
+                // if (message.MsgType === 'event') {
+                //     if (message.Event === 'subscribe') {
+                //         var now = new Date().getTime();
+                //
+                //         that.status = 200;
+                //         that.type = 'application/xml';
+                //         that.body = '<xml>' +
+                        // '<ToUserName><![CDATA['+ message.FromUserName + ']]></ToUserName>' +
+                        // '<FromUserName><![CDATA[' + message.ToUserName + ']]></FromUserName>' +
+                        // '<CreateTime>' + now +'</CreateTime>' +
+                        // '<MsgType><![CDATA[text]]></MsgType>' +
+                        // '<Content><![CDATA[hello world]]></Content>' +
+                        // '</xml>';
+                //
+                        // return
+                //      }
+                // }
             }
         }
-
     }
-};
+}
 
