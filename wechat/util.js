@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 // var tpl = require('./tpl');
 
 exports.parseXMLAsync = function (xml) {
+    console.log("start parse xml");
     return new Promise (function(resolve, reject){
         xml2js.parseString(xml,{trim:true},function(err,content){
             if (err) reject(err);
@@ -17,16 +18,16 @@ exports.parseXMLAsync = function (xml) {
 
 function formatMessage(result) {
     console.log("start formatMessage");
-    var message = {}
+    var message = {};
 
     if (typeof result === 'object') {
         var keys = Object.keys(result);
 
         for (var i = 0; i< keys.length; i++) {
             var item = result[keys[i]];
-            var key = keys[i]
+            var key = keys[i];
 
-            if(!(item instanceof Array) || item.length ===0) {
+            if(!(item instanceof Array) || item.length === 0) {
                 continue
             }
 
@@ -53,24 +54,7 @@ function formatMessage(result) {
     return message
 }
 
-exports.formatMessage = function (xml) {
-    console.log("call formatMessage");
-    console.log(typeof(xml));
-    return new Promise (function(resolve, reject){
-        console.log("using xml2js");
-        var parser = xml2js.Parser();
-        parser.parseString(xml,function(err,content){
-            if (err) {
-                console.log("parseString error");
-                reject(err);
-            }
-            else{
-                console.log("parseString success");
-                resolve(content);
-            }
-        })
-    })
-}
+exports.formatMessage = formatMessage;
 //
 // exports.tpl = function(content,message) {
 //     var info = {}
